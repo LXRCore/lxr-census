@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- LXR-CENSUS | LXR UI Kit | © 2026 iBoss21 / LXRCore | lxrcore.com -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Census</title>
+  <link rel="stylesheet" href="lxr-ui.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="lxr">
+  <div id="app" class="lxr-hidden">
+    <section class="cs-page lxr-hit">
+      <header class="cs-head lxr-rule-b">
+        <img class="cs-logo" src="img/lxrcore-logo.png" alt="">
+        <div><span class="lxr-mono lxr-t-ash" data-l="kicker"></span><h1 class="lxr-cut cs-title" data-l="title"></h1></div>
+        <span class="lxr-grow"></span>
+        <div class="cs-tally"><span class="cs-tally__n lxr-cut" id="total"></span><span class="lxr-mono lxr-t-smoke" id="slots"></span></div>
+      </header>
+      <div class="cs-body">
+        <div class="cs-groups" id="groups"></div>
+        <aside class="cs-side">
+          <div class="cs-stat"><span class="lxr-mono lxr-t-smoke" data-l="law"></span><span class="cs-stat__n lxr-cut" id="law"></span></div>
+          <div class="cs-stat"><span class="lxr-mono lxr-t-smoke" data-l="doctors"></span><span class="cs-stat__n lxr-cut" id="doctors"></span></div>
+          <div class="cs-side__head lxr-mono lxr-t-ash lxr-rule-b" data-l="tonight"></div>
+          <div id="allows"></div>
+        </aside>
+      </div>
+      <footer class="cs-foot lxr-mono lxr-t-smoke"><span class="lxr-key">Backspace</span><span data-l="hint_close"></span></footer>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

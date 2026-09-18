@@ -1,79 +1,35 @@
-LXRScoreboard = {};
-
-$(document).ready(function () {
-	window.addEventListener("message", function (event) {
-		switch (event.data.action) {
-			case "open":
-				LXRScoreboard.Open(event.data);
-				break;
-			case "close":
-				LXRScoreboard.Close();
-				break;
-		}
-	});
-});
-
-LXRScoreboard.Open = function (data) {
-	$(".scoreboard-block").fadeIn(150);
-
-	$("#total-players").html("<p>" + data.players + " OF " + data.maxPlayers + "</p>");
-
-	// var panel1 = data.players + 2
-	// var panel2 = data.players + 1
-	// var panel3 = data.players
-	// var panel4 = data.players + 3
-	// var panel5 = data.players + 2
-
-	// // var image1 = "fortnite-icon-two.png"
-
-	//     $("#total-players1").html("<img style=' width: 30px; height: 30px; background-color: red; ' src='fortnite-icon-two-"+panel1+".png'  />"); // 1
-	//     $("#total-players2").html("<img style=' width: 30px; height: 30px; background-color: green; ' src='fortnite-icon-two-"+panel2+".png'  />"); // 2
-	//     $("#total-players3").html("<img style=' width: 30px; height: 30px; background-color: gray; ' src='fortnite-icon-two-"+panel3+".png'  />"); // main
-	//     $("#total-players4").html("<img style=' width: 30px; height: 30px; background-color: black; ' src='fortnite-icon-two-"+panel4+".png'  />"); // 3
-	//     $("#total-players5").html("<img style=' width: 30px; height: 30px; background-color: white; ' src='fortnite-icon-two-"+panel5+".png'  />"); // 4
-
-	// } else {
-
-	//     $("#total-players").html("<img style=' width: 30px; height: 30px;   margin-top: 5px;  margin-left: -20px;  position: absolute !important;  ' src='fortnite-icon-two.png'  />");
-
-	// }
-
-	$("#bateal-pass").html("<p>" + data.ogtal3b + "</p>");
-
-	$.each(data.requiredCops, function (i, category) {
-		var beam = $(".scoreboard-info").find('[data-type="' + i + '"]');
-		var status = $(beam).find(".info-beam-status");
-
-		if (category.busy) {
-			$(status).html('<i class="fas fa-clock"></i>');
-		} else if (data.currentCops >= category.minimum) {
-			$(status).html('<i class="fas fa-circle"></i>');
-		} else {
-			$(status).html('<i class="fas fa-exclamation-circle"></i>');
-		}
-
-		if (data.currentCops > 0) {
-			var Abeam = $(".scoreboard-info").find('[data-type="police"]');
-			var Astatus = $(Abeam).find(".info-beam-status");
-			$(Astatus).html('<i class="fas fa-circle"></i>');
-		} else {
-			var Abeam = $(".scoreboard-info").find('[data-type="police"]');
-			var Astatus = $(Abeam).find(".info-beam-status");
-			$(Astatus).html('<i class="fas fa-exclamation-circle"></i>');
-		}
-
-		if (data.currentAmbulance > 0) {
-			var Abeam = $(".scoreboard-info").find('[data-type="ambulance"]');
-			var Astatus = $(Abeam).find(".info-beam-status");
-			$(Astatus).html('<i class="fas fa-circle"></i>');
-		} else {
-			var Abeam = $(".scoreboard-info").find('[data-type="ambulance"]');
-			var Astatus = $(Abeam).find(".info-beam-status");
-			$(Astatus).html('<i class="fas fa-exclamation-circle"></i>');
-		}
-	});
-};
-
-LXRScoreboard.Close = function () {
-	$(".scoreboard-block").fadeOut(150);
-};
+/* LXR-CENSUS — the page | © 2026 iBoss21 / LXRCore */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const app = $('app');
+  const RES = (typeof GetParentResourceName === 'function') ? GetParentResourceName() : 'lxr-census';
+  let L = {};
+  const t = (k, vars) => { let s = L[k] || k.split('.').pop().replace(/_/g, ' '); if (vars) for (const v in vars) s = s.replace('%{' + v + '}', vars[v]); return s; };
+  const post = (name, body) => fetch(`https://${RES}/${name}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) }).catch(() => {});
+  function applyLocale() { document.querySelectorAll('[data-l]').forEach(el => { const k = 'ui.' + el.dataset.l; if (L[k]) el.textContent = L[k]; }); }
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  function render(p) {
+    $('total').textContent = p.total; $('slots').textContent = t('ui.of_slots', { n: p.slots });
+    $('law').textContent = p.law; $('doctors').textContent = p.doctors;
+    const g = $('groups'); g.innerHTML = '';
+    (p.groups || []).forEach((grp, i) => {
+      const row = el('div', 'cs-group');
+      const n = el('span', 'cs-group__n', String(grp.count)); if (grp.onduty) { const s = el('small', '', t('ui.on_duty', { n: grp.onduty })); n.appendChild(s); }
+      row.append(el('span', 'cs-group__i', String(i + 1).padStart(2, '0')), el('span', 'cs-group__trade', t('trade.' + grp.trade)), n, el('span', 'cs-group__names', (grp.names || []).join(' · ')));
+      g.appendChild(row);
+    });
+    if (!(p.groups || []).length) g.appendChild(el('div', 'cs-group__names', t('ui.empty')));
+    const a = $('allows'); a.innerHTML = '';
+    (p.allows || []).forEach(x => { const row = el('div', 'cs-allow' + (x.ok ? ' is-ok' : '')); const dot = el('span', 'lxr-dot'); row.append(dot, el('span', '', t('need.' + x.id)), el('span', 'cs-allow__law', t('ui.needs_law', { n: x.law }))); a.appendChild(row); });
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Backspace' || e.key === 'Escape') post('close'); });
+  window.addEventListener('message', e => {
+    const m = e.data || {};
+    if (m.brand && m.brand.theme) document.documentElement.dataset.theme = m.brand.theme;
+    if (m.locale) { L = m.locale; applyLocale(); }
+    if (m.lang) document.body.classList.toggle('lang-ka', m.lang === 'ka');
+    if (m.action === 'open') { render(m.payload || {}); app.classList.remove('lxr-hidden'); }
+    if (m.action === 'close') app.classList.add('lxr-hidden');
+  });
+  if (window.__LXR_MOCK__) window.postMessage(window.__LXR_MOCK__, '*');
+})();
